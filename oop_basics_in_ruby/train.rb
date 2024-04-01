@@ -24,32 +24,32 @@ class Train
   def route=(route)
     @current_index = 0
     @route = route
-    @route.stations[@current_index].take_train(self)
+    current_station.take_train(self)
   end
 
   def current_station
-    @route.stations[@current_index] if @route
+    @route.stations[@current_index]
   end
 
   def move_to_next_station
     return if next_station.nil?
-    @route.stations[@current_index].send_train(self)
+    current_station.send_train(self)
     @current_index += 1
-    @route.stations[@current_index].take_train(self)
+    current_station.take_train(self)
   end
 
   def move_to_previous_station
     return if previous_station.nil?
-    @route.stations[@current_index].send_train(self)
+    current_station.send_train(self)
     @current_index -= 1
-    @route.stations[@current_index].take_train(self)
+    current_station.take_train(self)
   end
 
   def next_station
-    @route.stations[@current_index + 1] if @route.stations[@current_index + 1]
+    @route.stations[@current_index + 1]
   end
 
   def previous_station
-    @route.stations[@current_index - 1] if @route && !@current_index.zero?
+    @route.stations[@current_index - 1] if !@current_index.zero?
   end
 end
