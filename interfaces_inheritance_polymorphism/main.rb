@@ -18,128 +18,93 @@ class Railway
     @stations = []
     @trains = []
     @carriages = []
-    start
+    show_main_menu
   end
 
   # Пользователь общается только с графическим интерфейсом, поэтому все методы скрываются от него
   private
 
-  def start
-    delimiter
-    puts "1. Routes"
-    puts "2. Stations"
-    puts "3. Trains and Carriages"
-    puts "0. Exit"
-    menu = get_answer
+  ROUTES_MENU = [
+    { id: "1", title: "Create a route", action: :create_route },
+    { id: "2", title: "Show routes", action: :show_all_routes },
+    { id: "3", title: "Add a station to a route", action: :add_station_to_route },
+    { id: "4", title: "Remove a station from a route", action: :remove_station_from_route },
+    { id: "0", title: "Main menu", action: :show_main_menu },
+  ]
 
-    case menu
-    when "0"
-      return
-    when "1"
-      routes_menu_select
-    when "2"
-      stations_menu_select
-    when "3"
-      trains_and_carriages_menu_select
+  STATIONS_MENU = [
+    { id: "1", title: "Create a station", action: :create_station },
+    { id: "2", title: "Show stations", action: :show_all_stations },
+    { id: "0", title: "Main menu", action: :show_main_menu },
+  ]
+
+  TRAINS_AND_CARRIAGES_MENU = [
+    { id: "1", title: "Create a train", action: :create_train },
+    { id: "2", title: "Show trains", action: :show_all_trains },
+    { id: "3", title: "Create a carriage", action: :create_carriage },
+    { id: "4", title: "Show carriages", action: :show_all_carriages },
+    { id: "5", title: "Add a carriage to a train", action: :add_carriage_to_train },
+    { id: "6", title: "Remove a carriage from a train", action: :remove_carriage_to_train },
+    { id: "7", title: "Assign a train route", action: :assign_train_route },
+    { id: "8", title: "Move the train to the next station", action: :move_train_to_next_station },
+    { id: "9", title: "Move the train to the previous station", action: :move_train_to_previous_station },
+    { id: "0", title: "Main menu", action: :show_main_menu },
+  ]
+
+  MAIN_MENU = [
+    { id: "1", title: "Routes", action: :show_menu, params: ROUTES_MENU },
+    { id: "2", title: "Stations", action: :show_menu, params: STATIONS_MENU },
+    { id: "3", title: "Trains and Carriages", action: :show_menu, params: TRAINS_AND_CARRIAGES_MENU },
+    { id: "0", title: "Exit", action: :exit_program },
+  ]
+
+  def show_main_menu
+    show_menu(MAIN_MENU)
+  end
+
+  def show_menu(menu)
+    delimiter
+
+    menu.each { |menu_item| puts "#{menu_item[:id]}. #{menu_item[:title]}" }
+
+    choice = get_answer
+    menu_processing(menu, choice)
+  end
+
+  def menu_processing(menu, choice)
+    menu_item = menu.find { |menu_item| menu_item[:id] == choice }
+    if menu_item && menu_item[:params]
+      send(menu_item[:action], menu_item[:params])
+    elsif menu_item
+      send(menu_item[:action])
     else
       puts incorrect_choice
-      start
+      show_menu(MAIN_MENU)
     end
   end
 
-  def routes_menu_select
+  def show_all_routes
     delimiter
-    puts "1. Create a route"
-    puts "2. Show routes"
-    puts "3. Add a station to a route"
-    puts "4. Remove a station from a route"
-    puts "0. Main menu"
-    routes_menu = get_answer
-
-    case routes_menu
-    when "0"
-      start
-    when "1"
-      create_route
-    when "2"
-      delimiter
-      show_routes
-      routes_menu_select
-    when "3"
-      add_station_to_route
-    when "4"
-      remove_station_from_route
-    else
-      puts incorrect_choice
-      routes_menu
-    end
+    show_routes
+    show_menu(ROUTES_MENU)
   end
 
-  def stations_menu_select
+  def show_all_stations
     delimiter
-    puts "1. Create a station"
-    puts "2. Show stations"
-    puts "0. Main menu"
-    stations_menu = get_answer
-
-    case stations_menu
-    when "0"
-      start
-    when "1"
-      create_station
-    when "2"
-      delimiter
-      show_stations
-      stations_menu_select
-    else
-      puts incorrect_choice
-      stations_menu
-    end
+    show_stations
+    show_menu(STATIONS_MENU)
   end
 
-  def trains_and_carriages_menu_select
+  def show_all_trains
     delimiter
-    puts "1. Create a train"
-    puts "2. Show trains"
-    puts "3. Create a carriage"
-    puts "4. Show carriages"
-    puts "5. Add a carriage to a train"
-    puts "6. Remove a carriage from a train"
-    puts "7. Assign a train route"
-    puts "8. Move the train to the next station"
-    puts "9. Move the train to the previous station"
-    puts "0. Main menu"
-    trains_and_carriages_menu = get_answer
+    show_trains
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
+  end
 
-    case trains_and_carriages_menu
-    when "0"
-      start
-    when "1"
-      create_train
-    when "2"
-      delimiter
-      show_trains
-      trains_and_carriages_menu_select
-    when "3"
-      create_carriage
-    when "4"
-      delimiter
-      show_carriages
-      trains_and_carriages_menu_select
-    when "5"
-      add_carriage_to_train
-    when "6"
-      remove_carriage_to_train
-    when "7"
-      assign_train_route
-    when "8"
-      move_train_to_next_station
-    when "9"
-      move_train_to_previous_station
-    else
-      puts incorrect_choice
-      trains_and_carriages_menu
-    end
+  def show_all_carriages
+    delimiter
+    show_carriages
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def create_train
@@ -159,11 +124,11 @@ class Railway
     end
 
     puts "Train created!"
-    trains_and_carriages_menu_select
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def show_trains
-    return trains_and_carriages_menu_select if trains_empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if trains_empty?
 
     puts "Trains:"
     trains.each_with_index do |train, index|
@@ -196,11 +161,11 @@ class Railway
     end
 
     puts "Carriage created!"
-    trains_and_carriages_menu_select
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def show_carriages(carriagesArray = carriages)
-    return trains_and_carriages_menu_select if carriages_empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if carriages_empty?
 
     puts "Carriages:"
     carriagesArray.each_with_index do |carriage, index|
@@ -216,7 +181,7 @@ class Railway
 
   def show_carriages_by_type(type)
     array_of_carriages_by_type = carriages_by_type(type)
-    return trains_and_carriages_menu_select if array_of_carriages_by_type.empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if array_of_carriages_by_type.empty?
     puts "Carriages:"
 
     show_carriages(array_of_carriages_by_type)
@@ -224,7 +189,7 @@ class Railway
 
   def add_carriage_to_train
     delimiter
-    return trains_and_carriages_menu_select if trains_empty? || carriages_empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if trains_empty? || carriages_empty?
 
     show_trains
     puts "Select the index of the trains:"
@@ -239,12 +204,12 @@ class Railway
     train.add_carriage(array_of_carriages_by_type[carriage_by_type_index])
     puts "The carriage has been added to the train!"
 
-    trains_and_carriages_menu_select
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def remove_carriage_to_train
     delimiter
-    return trains_and_carriages_menu_select if trains_empty? || carriages_empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if trains_empty? || carriages_empty?
 
     show_trains
     puts "Select the index of the trains:"
@@ -261,12 +226,12 @@ class Railway
     train.remove_carriage(train.carriages[carriage_by_type_index])
     puts "The carriage has been removed to the train!"
 
-    trains_and_carriages_menu_select
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def assign_train_route
     delimiter
-    return trains_and_carriages_menu_select if trains_empty? || routes_empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if trains_empty? || routes_empty?
 
     train = select_train
 
@@ -275,16 +240,16 @@ class Railway
     train.route = routes[route_index]
     puts "The route has been assigned to the train!"
 
-    trains_and_carriages_menu_select
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def move_train_to_next_station
     delimiter
-    return trains_and_carriages_menu_select if trains_empty? || routes_empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if trains_empty? || routes_empty?
 
     train = select_train
 
-    return trains_and_carriages_menu_select if check_if_route_assigned_to_train?(train)
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if check_if_route_assigned_to_train?(train)
 
     if train.next_station
       train.move_to_next_station
@@ -293,16 +258,16 @@ class Railway
       puts "This is the last station!"
     end
 
-    trains_and_carriages_menu_select
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def move_train_to_previous_station
     delimiter
-    return trains_and_carriages_menu_select if trains_empty? || routes_empty?
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if trains_empty? || routes_empty?
 
     train = select_train
 
-    return trains_and_carriages_menu_select if check_if_route_assigned_to_train?(train)
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if check_if_route_assigned_to_train?(train)
 
     if train.previous_station
       train.move_to_previous_station
@@ -311,7 +276,7 @@ class Railway
       puts "This is the first station!"
     end
 
-    trains_and_carriages_menu_select
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def create_station
@@ -321,11 +286,11 @@ class Railway
     station_name = get_answer
     stations << Station.new(station_name)
     puts "Station created!"
-    stations_menu_select
+    show_menu(STATIONS_MENU)
   end
 
   def show_stations
-    return stations_menu_select if stations_empty?
+    return show_menu(STATIONS_MENU) if stations_empty?
 
     puts "Stations:"
     stations.each_with_index do |station, index|
@@ -335,7 +300,7 @@ class Railway
 
   def create_route
     delimiter
-    return routes_menu_select if stations_empty?
+    return show_menu(ROUTES_MENU) if stations_empty?
 
     puts "Create a route:"
     show_stations
@@ -348,7 +313,7 @@ class Railway
 
     routes << Route.new(stations[first_station_index], stations[last_station_index])
     puts "Route created!"
-    routes_menu_select
+    show_menu(ROUTES_MENU)
   end
 
   def show_routes
@@ -362,7 +327,7 @@ class Railway
 
   def add_station_to_route
     delimiter
-    return routes_menu_select if stations_empty? || routes_empty?
+    return show_menu(ROUTES_MENU) if stations_empty? || routes_empty?
 
     route_index = select_route_index
 
@@ -372,12 +337,12 @@ class Railway
 
     routes[route_index].add_station(stations[station_index])
     puts "The station has been added to the route!"
-    routes_menu_select
+    show_menu(ROUTES_MENU)
   end
 
   def remove_station_from_route
     delimiter
-    return routes_menu_select if stations_empty? || routes_empty?
+    return show_menu(ROUTES_MENU) if stations_empty? || routes_empty?
 
     route_index = select_route_index
 
@@ -385,7 +350,7 @@ class Railway
 
     if stations_of_route.length < 3
       puts "You can't remove the first and last station!"
-      return routes_menu_select
+      return show_menu(ROUTES_MENU)
     end
 
     puts "Stations:"
@@ -398,7 +363,7 @@ class Railway
 
     routes[route_index].remove_station(stations_of_route[station_index])
     puts "The station has been removed to the route!"
-    routes_menu_select
+    show_menu(ROUTES_MENU)
   end
 
   def stations_empty?
@@ -458,6 +423,10 @@ class Railway
         puts "Select correct index:"
       end
     end
+  end
+
+  def exit_program
+    Kernel.exit
   end
 
   def get_answer
