@@ -1,3 +1,6 @@
+require_relative "./modules/manufacturer"
+require_relative "./modules/instance_counter"
+
 require_relative "./carriage/carriage.rb"
 require_relative "./carriage/passenger_carriage.rb"
 require_relative "./carriage/cargo_carriage.rb"
