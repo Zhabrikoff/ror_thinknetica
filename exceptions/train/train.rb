@@ -13,6 +13,8 @@ class Train
 
   def initialize(number)
     @number = number
+    validate!
+
     @speed = 0
     @carriages = []
 
@@ -63,5 +65,9 @@ class Train
 
   def previous_station
     @route.stations[@current_index - 1] if !@current_index.zero?
+  end
+
+  def validate!
+    raise "Invalid number format!" if number !~ /^[a-z0-9]{3}(-[a-z0-9]{2})?$/i
   end
 end

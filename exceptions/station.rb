@@ -11,6 +11,7 @@ class Station
 
   def initialize(name)
     @name = name
+    validate!
     @trains = []
 
     @@stations << self
@@ -34,5 +35,9 @@ class Station
     end
 
     count
+  end
+
+  def validate!
+    raise "Invalid number format!" if name !~ /^[a-z0-9]{6}$/i
   end
 end

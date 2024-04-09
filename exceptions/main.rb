@@ -1,5 +1,6 @@
 require_relative "./modules/manufacturer"
 require_relative "./modules/instance_counter"
+require_relative "./modules/validation"
 
 require_relative "./carriage/carriage.rb"
 require_relative "./carriage/passenger_carriage.rb"
@@ -119,14 +120,18 @@ class Railway
     puts "Enter train number:"
     train_number = get_answer
 
-    case train_type_index
-    when 0
-      trains << CargoTrain.new(train_number)
-    when 1
-      trains << PassengerTrain.new(train_number)
+    begin
+      case train_type_index
+      when 0
+        trains << CargoTrain.new(train_number)
+      when 1
+        trains << PassengerTrain.new(train_number)
+      end
+      puts "Train created!"
+    rescue RuntimeError => e
+      puts e.message
     end
 
-    puts "Train created!"
     show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
@@ -156,14 +161,18 @@ class Railway
     puts "Enter carriage number:"
     carriage_number = get_answer
 
-    case carriage_type_index
-    when 0
-      carriages << CargoCarriage.new(carriage_number)
-    when 1
-      carriages << PassengerCarriage.new(carriage_number)
+    begin
+      case carriage_type_index
+      when 0
+        carriages << CargoCarriage.new(carriage_number)
+      when 1
+        carriages << PassengerCarriage.new(carriage_number)
+      end
+      puts "Carriage created!"
+    rescue RuntimeError => e
+      puts e.message
     end
 
-    puts "Carriage created!"
     show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
@@ -287,8 +296,14 @@ class Railway
     puts "Create a station"
     puts "Enter station name:"
     station_name = get_answer
-    stations << Station.new(station_name)
-    puts "Station created!"
+
+    begin
+      stations << Station.new(station_name)
+      puts "Station created!"
+    rescue RuntimeError => e
+      puts e.message
+    end
+
     show_menu(STATIONS_MENU)
   end
 
