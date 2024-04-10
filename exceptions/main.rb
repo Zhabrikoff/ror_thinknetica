@@ -114,13 +114,12 @@ class Railway
   def create_train
     delimiter
     puts "Create a train"
-
     train_type_index = select_type_of_carriage_of_train
 
-    puts "Enter train number:"
-    train_number = get_answer
-
     begin
+      puts "Enter train number:"
+      train_number = get_answer
+
       case train_type_index
       when 0
         trains << CargoTrain.new(train_number)
@@ -130,6 +129,7 @@ class Railway
       puts "Train created!"
     rescue RuntimeError => e
       puts e.message
+      retry
     end
 
     show_menu(TRAINS_AND_CARRIAGES_MENU)
@@ -155,13 +155,12 @@ class Railway
   def create_carriage
     delimiter
     puts "Create a carriage"
-
     carriage_type_index = select_type_of_carriage_of_train
 
-    puts "Enter carriage number:"
-    carriage_number = get_answer
-
     begin
+      puts "Enter carriage number:"
+      carriage_number = get_answer
+
       case carriage_type_index
       when 0
         carriages << CargoCarriage.new(carriage_number)
@@ -171,6 +170,7 @@ class Railway
       puts "Carriage created!"
     rescue RuntimeError => e
       puts e.message
+      retry
     end
 
     show_menu(TRAINS_AND_CARRIAGES_MENU)
@@ -294,14 +294,16 @@ class Railway
   def create_station
     delimiter
     puts "Create a station"
-    puts "Enter station name:"
-    station_name = get_answer
 
     begin
+      puts "Enter station name:"
+      station_name = get_answer
+
       stations << Station.new(station_name)
       puts "Station created!"
     rescue RuntimeError => e
       puts e.message
+      retry
     end
 
     show_menu(STATIONS_MENU)
