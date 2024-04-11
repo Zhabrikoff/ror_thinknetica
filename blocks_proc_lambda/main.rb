@@ -39,6 +39,7 @@ class Railway
   STATIONS_MENU = [
     { id: "1", title: "Create a station", action: :create_station },
     { id: "2", title: "Show stations", action: :show_all_stations },
+    { id: "3", title: "Show trains at the station", action: :show_trains_at_station },
     { id: "0", title: "Main menu", action: :show_main_menu },
   ]
 
@@ -49,9 +50,11 @@ class Railway
     { id: "4", title: "Show carriages", action: :show_all_carriages },
     { id: "5", title: "Add a carriage to a train", action: :add_carriage_to_train },
     { id: "6", title: "Remove a carriage from a train", action: :remove_carriage_to_train },
-    { id: "7", title: "Assign a train route", action: :assign_train_route },
-    { id: "8", title: "Move the train to the next station", action: :move_train_to_next_station },
-    { id: "9", title: "Move the train to the previous station", action: :move_train_to_previous_station },
+    { id: "7", title: "Take up space or seats in the carriage", action: :take_up_space_or_seats_in_carriage },
+    { id: "8", title: "Show list of train carriages ", action: :show_train_carriages },
+    { id: "9", title: "Assign a train route", action: :assign_train_route },
+    { id: "10", title: "Move the train to the next station", action: :move_train_to_next_station },
+    { id: "11", title: "Move the train to the previous station", action: :move_train_to_previous_station },
     { id: "0", title: "Main menu", action: :show_main_menu },
   ]
 
@@ -59,6 +62,7 @@ class Railway
     { id: "1", title: "Routes", action: :show_menu, params: ROUTES_MENU },
     { id: "2", title: "Stations", action: :show_menu, params: STATIONS_MENU },
     { id: "3", title: "Trains and Carriages", action: :show_menu, params: TRAINS_AND_CARRIAGES_MENU },
+    { id: "4", title: "Seed", action: :seed },
     { id: "0", title: "Exit", action: :exit_program },
   ]
 
@@ -163,9 +167,13 @@ class Railway
 
       case carriage_type_index
       when 0
-        carriages << CargoCarriage.new(carriage_number)
+        puts "Enter total space:"
+        total_space = get_answer
+        carriages << CargoCarriage.new(carriage_number, total_space)
       when 1
-        carriages << PassengerCarriage.new(carriage_number)
+        puts "Enter the number of seats:"
+        seats_number = get_answer
+        carriages << PassengerCarriage.new(carriage_number, seats_number)
       end
       puts "Carriage created!"
     rescue RuntimeError => e
@@ -318,6 +326,57 @@ class Railway
     end
   end
 
+  def show_list_of_train_carriages(train)
+    train.each_carriage do |carriage|
+      if carriage.type == :passenger
+        puts "Carriage number: #{carriage.number}, " \
+             "type: #{carriage.type}, " \
+             "free seats: #{carriage.free_seats}, " \
+             "occupied seats: #{carriage.occupied_seats}"
+      else
+        puts "Carriage number: #{carriage.number}, " \
+             "type: #{carriage.type}, " \
+             "free space: #{carriage.free_space}, " \
+             "occupied space: #{carriage.occupied_space}"
+      end
+    end
+  end
+
+  def show_trains_at_station
+    delimiter
+    return show_menu(STATIONS_MENU) if stations_empty?
+
+    stations.each_with_index do |station, index|
+      delimiter if index != 0
+      puts "Station name: #{station.name}"
+      if station.trains.empty?
+        puts "No trains!"
+      else
+        station.each_train do |train|
+          puts "Train number: #{train.number}, type: #{train.type}, number of carriages: #{train.carriages.length}"
+          show_list_of_train_carriages(train)
+        end
+      end
+    end
+
+    show_menu(STATIONS_MENU)
+  end
+
+  def show_train_carriages
+    delimiter
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if trains_empty?
+
+    show_trains
+    puts "Select the index of the trains:"
+    train_type_index = check_index_is_correct(trains.length)
+    train = trains[train_type_index]
+
+    return puts "The selected train has no carriages!" if train.carriages.empty?
+    show_list_of_train_carriages(train)
+
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
+  end
+
   def create_route
     delimiter
     return show_menu(ROUTES_MENU) if stations_empty?
@@ -384,6 +443,29 @@ class Railway
     routes[route_index].remove_station(stations_of_route[station_index])
     puts "The station has been removed to the route!"
     show_menu(ROUTES_MENU)
+  end
+
+  def take_up_space_or_seats_in_carriage
+    delimiter
+    return show_menu(TRAINS_AND_CARRIAGES_MENU) if carriages_empty?
+
+    show_carriages
+    puts "Select carriage index:"
+    carriage_index = check_index_is_correct(carriages.length)
+
+    carriage = carriages[carriage_index]
+
+    if carriage.type == :passenger
+      carriage.take_seat
+      puts "The seat was occupied"
+    else
+      puts "Enter space:"
+      space = get_answer_i
+      carriage.take_up_space(space)
+      puts "The space was occupied"
+    end
+
+    show_menu(TRAINS_AND_CARRIAGES_MENU)
   end
 
   def stations_empty?
@@ -463,5 +545,43 @@ class Railway
 
   def delimiter
     puts "===================================="
+  end
+
+  def seed
+    5.times do |i|
+      stations << Station.new("#{i}000#{rand(10..99)}")
+    end
+
+    5.times do
+      routes << Route.new(stations[rand(0..4)], stations[rand(0..4)])
+    end
+
+    routes.each do |route|
+      route.add_station(stations[rand(0..4)])
+    end
+
+    5.times do |i|
+      trains << CargoTrain.new("#{i}C0")
+      trains << PassengerTrain.new("#{i}P0")
+    end
+
+    trains.each do |train|
+      train.route = routes[rand(0..4)]
+      if train.type == :passenger
+        3.times do |i|
+          passenger_carriage = PassengerCarriage.new("#{i}P00#{rand(10..99)}", rand(1..10))
+          train.add_carriage(passenger_carriage)
+          carriages << passenger_carriage
+        end
+      else
+        3.times do |i|
+          cargo_carriage = CargoCarriage.new("#{i}C00#{rand(10..99)}", rand(10..100))
+          train.add_carriage(cargo_carriage)
+          carriages << cargo_carriage
+        end
+      end
+    end
+
+    show_main_menu
   end
 end

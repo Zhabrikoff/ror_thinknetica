@@ -37,6 +37,10 @@ class Station
     count
   end
 
+  def each_train(&block)
+    trains.each(&block) if block_given?
+  end
+
   def validate!
     raise "Invalid number format!" if name !~ /^[a-z0-9]{6}$/i
   end
