@@ -1,19 +1,10 @@
 class PassengerCarriage < Carriage
-  attr_accessor :free_seats
-  attr_reader :seats
-
-  def initialize(number, seats)
+  def initialize(number, place)
     @type = :passenger
-    @seats = seats
-    @free_seats = seats
-    super(number)
+    super
   end
 
-  def take_seat
-    self.free_seats -= 1 if free_seats.positive?
-  end
-
-  def occupied_seats
-    @seats - @free_seats
+  def take_place
+    @used_place += 1 if free_place.positive?
   end
 end

@@ -168,12 +168,12 @@ class Railway
       case carriage_type_index
       when 0
         puts "Enter total space:"
-        total_space = get_answer
-        carriages << CargoCarriage.new(carriage_number, total_space)
+        place = get_answer
+        carriages << CargoCarriage.new(carriage_number, place)
       when 1
         puts "Enter the number of seats:"
-        seats_number = get_answer
-        carriages << PassengerCarriage.new(carriage_number, seats_number)
+        place = get_answer
+        carriages << PassengerCarriage.new(carriage_number, place)
       end
       puts "Carriage created!"
     rescue RuntimeError => e
@@ -328,17 +328,10 @@ class Railway
 
   def show_list_of_train_carriages(train)
     train.each_carriage do |carriage|
-      if carriage.type == :passenger
-        puts "Carriage number: #{carriage.number}, " \
-             "type: #{carriage.type}, " \
-             "free seats: #{carriage.free_seats}, " \
-             "occupied seats: #{carriage.occupied_seats}"
-      else
-        puts "Carriage number: #{carriage.number}, " \
-             "type: #{carriage.type}, " \
-             "free space: #{carriage.free_space}, " \
-             "occupied space: #{carriage.occupied_space}"
-      end
+      puts "Carriage number: #{carriage.number}, " \
+           "type: #{carriage.type}, " \
+           "free place: #{carriage.free_place}, " \
+           "occupied place: #{carriage.used_place}"
     end
   end
 
@@ -456,12 +449,12 @@ class Railway
     carriage = carriages[carriage_index]
 
     if carriage.type == :passenger
-      carriage.take_seat
+      carriage.take_place
       puts "The seat was occupied"
     else
       puts "Enter space:"
       space = get_answer_i
-      carriage.take_up_space(space)
+      carriage.take_place(space)
       puts "The space was occupied"
     end
 
