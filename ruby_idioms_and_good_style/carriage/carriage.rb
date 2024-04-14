@@ -15,10 +15,10 @@ class Carriage
   end
 
   def take_place
-    raise "Should be implemented in subclasses"
+    raise 'Should be implemented in subclasses'
   end
 
   def validate!
-    raise "Invalid number format!" if number !~ /^[a-z0-9]{6}$/i
+    raise 'Invalid number format!' if number !~ /^[a-z0-9]{6}$/i
   end
 end

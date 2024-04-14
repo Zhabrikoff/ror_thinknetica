@@ -42,11 +42,12 @@ class Train
   end
 
   def current_station
-    @route.stations[@current_index] if !@route.nil?
+    @route.stations[@current_index] unless @route.nil?
   end
 
   def move_to_next_station
     return if next_station.nil?
+
     current_station.send_train(self)
     @current_index += 1
     current_station.take_train(self)
@@ -54,6 +55,7 @@ class Train
 
   def move_to_previous_station
     return if previous_station.nil?
+
     current_station.send_train(self)
     @current_index -= 1
     current_station.take_train(self)
@@ -64,7 +66,7 @@ class Train
   end
 
   def previous_station
-    @route.stations[@current_index - 1] if !@current_index.zero?
+    @route.stations[@current_index - 1] unless @current_index.zero?
   end
 
   def each_carriage(&block)
@@ -72,6 +74,6 @@ class Train
   end
 
   def validate!
-    raise "Invalid number format!" if number !~ /^[a-z0-9]{3}(-[a-z0-9]{2})?$/i
+    raise 'Invalid number format!' if number !~ /^[a-z0-9]{3}(-[a-z0-9]{2})?$/i
   end
 end

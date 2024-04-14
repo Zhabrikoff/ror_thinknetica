@@ -42,6 +42,6 @@ class Station
   end
 
   def validate!
-    raise "Invalid number format!" if name !~ /^[a-z0-9]{6}$/i
+    raise 'Invalid number format!' if name !~ /^[a-z0-9]{6}$/i
   end
 end
