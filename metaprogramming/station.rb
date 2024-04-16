@@ -1,7 +1,12 @@
 class Station
   include InstanceCounter
+  include Validation
 
   attr_reader :name, :trains
+
+  validate :name, :presence
+  validate :name, :format, /^[a-z0-9]{6}$/i
+  validate :name, :class_type, String
 
   @@stations = []
 
@@ -39,9 +44,5 @@ class Station
 
   def each_train(&block)
     trains.each(&block) if block_given?
-  end
-
-  def validate!
-    raise 'Invalid number format!' if name !~ /^[a-z0-9]{6}$/i
   end
 end

@@ -1,8 +1,10 @@
 class Train
   include InstanceCounter
   include Manufacturer
+  include Accessors
+  include Validation
 
-  attr_accessor :speed
+  attr_accessor_with_history :speed
   attr_reader :type, :number, :carriages, :route
 
   @@trains = []
@@ -71,9 +73,5 @@ class Train
 
   def each_carriage(&block)
     carriages.each(&block) if block_given?
-  end
-
-  def validate!
-    raise 'Invalid number format!' if number !~ /^[a-z0-9]{3}(-[a-z0-9]{2})?$/i
   end
 end

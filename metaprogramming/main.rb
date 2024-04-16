@@ -1,6 +1,7 @@
 require_relative 'modules/manufacturer'
 require_relative 'modules/instance_counter'
 require_relative 'modules/validation'
+require_relative 'modules/accessors'
 
 require_relative 'carriage/carriage'
 require_relative 'carriage/passenger_carriage'
@@ -161,10 +162,10 @@ class Railway
     puts 'Create a carriage'
     carriage_type_index = select_type_of_carriage_of_train
 
-    puts 'Enter carriage number:'
-    carriage_number = take_answer
-
     begin
+      puts 'Enter carriage number:'
+      carriage_number = take_answer
+
       case carriage_type_index
       when 0
         puts 'Enter total space:'

@@ -1,4 +1,8 @@
 class CargoCarriage < Carriage
+  validate :number, :presence
+  validate :number, :format, /^[a-z0-9]{6}$/i
+  validate :number, :class_type, String
+
   def initialize(number, place)
     @type = :cargo
     super

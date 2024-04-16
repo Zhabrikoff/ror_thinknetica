@@ -1,5 +1,6 @@
 class Carriage
   include Manufacturer
+  include Validation
 
   attr_reader :type, :number, :total_place, :used_place
 
@@ -16,9 +17,5 @@ class Carriage
 
   def take_place
     raise 'Should be implemented in subclasses'
-  end
-
-  def validate!
-    raise 'Invalid number format!' if number !~ /^[a-z0-9]{6}$/i
   end
 end
